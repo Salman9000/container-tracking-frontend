@@ -62,7 +62,39 @@ export default function Form() {
     try {
       console.log(data);
       clearForm();
-      http.post("/api/create", data);
+      const res = await http.post("sensor/add", {name: data.name});
+      const id = res.data.uid
+      const res2 = await http.patch("sensor/update/data", {
+        sensorid: id,
+        anglePitch: Math.floor(
+          Math.random() * (data.anglePitchMax - data.anglePitchMin) +
+            data.anglePitchMin
+        ),
+        angleRoll: Math.floor(
+          Math.random() * (data.angleRollMax - data.angleRollMin) + data.angleRollMin
+        ),
+        movementCount: Math.floor(
+          Math.random() * (data.movementCountMax - data.movementCountMin) +
+            data.movementCountMin
+        ),
+        batteryVoltage: Math.floor(
+          Math.random() * (data.batteryCountMax - data.batteryCountMin) +
+            data.batteryCountMin
+        ),
+        intervalTime: data.intervalTime,
+        range: data.range,
+        measuredPower: data.measuredPower,
+        anglePitchMax: data.anglePitchMax,
+        anglePitchMin: data.anglePitchMin,
+        angleRollMax: data.angleRollMax,
+        angleRollMin: data.angleRollMin,
+        movementCountMax: data.movementCountMax,
+        movementCountMin: data.movementCountMin,
+        batteryCountMax: data.batteryCountMax,
+        batteryCountMin: data.batteryCountMin,
+        timestamp: new Date().toISOString()
+      })
+      console.log(res2.data)
     } catch (e) {
       console.log(e);
     }

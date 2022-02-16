@@ -1,7 +1,7 @@
 import { data } from "autoprefixer";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import httpCommon from "./http-common";
+import http from "./http-common.js";
 export default function BLE() {
   const location = useLocation();
   const {
@@ -34,10 +34,9 @@ export default function BLE() {
   const getBle = async () => {
     console.log(location.state)
     try {
-      const res = await httpCommon.get(`https://at-backend1.herokuapp.com/sensor/get/${location.state}`);
-      console.log(res)
-      setData(res.data);
-      console.log(data);
+      const res = await http.get(`sensor/get/data/${location.state}`);
+      console.log(res.data[res.data.length-1])
+      setData(res.data[res.data.length-1]);
     } catch (e) {
       console.log(e);
     }
@@ -64,29 +63,29 @@ export default function BLE() {
           <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt className="text-sm font-medium text-gray-500">Name</dt>
             <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-              {data.name}
+              {data?.sensor?.name}
             </dd>
           </div>
-          <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          {/* <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt className="text-sm font-medium text-gray-500">
               Tx Power Level
             </dt>
             <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-              {data.powerLevel}
+              {data?.powerLevel}
             </dd>
-          </div>
+          </div> */}
           <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt className="text-sm font-medium text-gray-500">
               Interval Time (ms)
             </dt>
             <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-              {data.intervalTime}
+              {data?.intervalTime}
             </dd>
           </div>
           <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt className="text-sm font-medium text-gray-500">Range (m)</dt>
             <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-              {data.range}
+              {data?.range}
             </dd>
           </div>
           <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -94,31 +93,31 @@ export default function BLE() {
               Measured Power
             </dt>
             <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-              {data.measuredPower}
+              {data?.measuredPower}
             </dd>
           </div>
           <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt className="text-sm font-medium text-gray-500">Angle Pitch</dt>
             <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-              {data.anglePitch}
+              {data?.anglePitch}
             </dd>
           </div>
           <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt className="text-sm font-medium text-gray-500">Angle Roll</dt>
             <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-              {data.angleRoll}
+              {data?.angleRoll}
             </dd>
           </div>
           <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt className="text-sm font-medium text-gray-500">Movement Count</dt>
             <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-              {data.movementCount}
+              {data?.movementCount}
             </dd>
           </div>
           <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt className="text-sm font-medium text-gray-500">Battery Voltage</dt>
             <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-              {data.batteryVoltage}
+              {data?.batteryVoltage}
             </dd>
           </div>
           {/* <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">

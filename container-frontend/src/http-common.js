@@ -1,8 +1,10 @@
 import axios from "axios";
+import { getToken } from "./util";
 
 export default axios.create({
-  baseURL: "http://localhost:3001",
+  baseURL: "https://at-backend1.herokuapp.com/",
   headers: {
-    "Content-type": "application/json"
+    "Content-type": "application/json",
+    "Authorization": `Bearer ${getToken()}` 
   }
 });

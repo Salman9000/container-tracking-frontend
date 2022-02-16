@@ -5,15 +5,38 @@ import http from "./http-common.js";
 export default function ViewAll() {
 
   const [bleData, setData] = useState(null);
-
+  const handleOnChange = (position) => {
+    const updatedCheckedState = bleData.map((item, index) => {
+      if(index===position) {
+        item.checked = !item.checked
+        return item;
+      } else {
+        return item
+      }
+    })
+    console.log(updatedCheckedState)
+    setData(updatedCheckedState);
+  }
   const getAll = async () => {
     try {
-      const res = await http.get("https://at-backend1.herokuapp.com/sensor/all");
-      console.log(res.data)
-      setData(res.data)
+      const res = await http.get("/sensor/all");
+      const modifiedData = res.data.map(item => {return {...item, checked: false}})
+      console.log(modifiedData)
+
+      setData(modifiedData)
     } catch (e) {
       console.log(e)
     }
+  }
+
+  const startExecution = async () => {
+    let checkedData = bleData.filter(item => item.checked == true)
+    checkedData.map(async ble => {
+      const res = await http.get(`/sensor/get/data/${ble.uid}`)
+      console.log(res.data[0])
+    })
+    
+    console.log(checkedData)
   }
   useEffect(() => {
     getAll()
@@ -21,13 +44,17 @@ export default function ViewAll() {
   }, []);
   
   return (
+    <div>
     <ul role="list" className="divide-y divide-gray-200">
-      {bleData && bleData.map((ble) => (
+      {bleData && bleData.map((ble, index) => (
        
         <li
-          key={ble.uuid}
-          className="relative bg-gray-100 py-5 px-4 w-1/2  mx-auto hover:bg-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600"
+          key={ble.uid}
+          className="relative bg-gray-100 py-5 px-4 w-1/2  mx-auto hover:bg-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 hover:cursor-pointer"
+         
         >
+          <label htmlFor={`custom-checkbox-${index}`}  className="flex">
+            <div className="w-full mr-10">
           <div className="flex justify-between space-x-3">
             <div className="min-w-0 flex-1">          
                 <p className="text-sm font-medium text-gray-900 truncate">
@@ -44,11 +71,12 @@ export default function ViewAll() {
           </div>
           <div className="mt-1">
             <p className="line-clamp-2 text-sm text-gray-600">
-            {ble.description}
+            {ble.uid}
             </p>
           </div>
+          
           <div className="flex justify-center">
-          <Link to={`/view/edit/${ble.uid}`} state={ble}  key={ble.uid}>
+          <Link to={`/view/edit/${ble.uid}`} state={ble}>
           <button
             // onClick={() => setExecution(false)}
             type="button"
@@ -57,7 +85,7 @@ export default function ViewAll() {
             Edit
           </button>
           </Link>
-          <Link to={`/view/${ble.uid}`} state={ble.uid}  key={ble.uid}>
+          <Link to={`/view/${ble.uid}`} state={ble.uid}>
           <button
             // onClick={() => setExecution(true)}
             type="button"
@@ -67,8 +95,33 @@ export default function ViewAll() {
           </button>
           </Link>
         </div>
+        </div>
+        <div className="flex items-center hover:cursor-pointer">
+            <input
+              id={`custom-checkbox-${index}`}
+              aria-describedby="comments-description"
+              name={ble.name}
+              type="checkbox"
+              checked={bleData.checked}
+              // value={ble.name}
+              onChange={() => handleOnChange(index)}
+              className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded hover:cursor-pointer"
+            />
+            
+          </div>
+        </label>
         </li>
       ))}
     </ul>
+    <div className="mx-auto w-1/2 mt-12">
+    <button
+            onClick={() => startExecution()}
+            type="button"
+            className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+          >
+            Execute
+          </button>
+          </div>
+    </div>
   );
 }

@@ -19,7 +19,7 @@ export default function AddContainer() {
 
   useEffect(() => {
     const getAll = async () => {
-      const res = await axios.get("https://at-backend1.herokuapp.com/asset/all", 
+      const res = await http.get("asset/all", 
       // {
       //   headers: {
       //     'Access-Control-Allow-Origin': '*',

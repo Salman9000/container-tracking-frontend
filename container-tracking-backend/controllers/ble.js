@@ -25,10 +25,11 @@ const get = async (req, res) => {
 };
 
 const create = async (req, res) => {
-  const data = req.body;
+  const name = req.body;
+  
   const {
     batteryCountMax,
-    name,
+    // name,
     batteryCountMin,
     powerLevel,
     intervalTime,
@@ -44,7 +45,7 @@ const create = async (req, res) => {
   } = data;
   try {
     let newData = {
-      name,
+      // name,
       intervalTime,
       range,
       measuredPower,
@@ -64,7 +65,7 @@ const create = async (req, res) => {
     // defaultData = [...defaultData, newData];
     // console.log(newData)
     const res = await axios
-      .post("https://at-backend1.herokuapp.com/sensor/add", data
+      .post("https://at-backend1.herokuapp.com/sensor/add", {name}
       )
 
       // axios
@@ -78,7 +79,7 @@ const create = async (req, res) => {
       //   console.log("error11");
       // });
 
-    execute();
+    // execute();
 
     //Add entry to db
     // console.log(newData)
