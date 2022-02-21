@@ -29,20 +29,58 @@ export default function ViewAll() {
     }
   }
 
-  const startExecution = async () => {
+  const repeatFunction = async () => {
     let checkedData = bleData.filter(item => item.checked == true)
     checkedData.map(async ble => {
       const res = await http.get(`/sensor/get/data/${ble.uid}`)
-      console.log(res.data[0])
+      const data = res.data[res.data.length-1]
+      const res2 = await http.patch("sensor/update/data", {
+        sensor: ble.uid,
+        anglePitch: Math.floor(
+          Math.random() * (data.anglePitchMax - data.anglePitchMin) +
+            data.anglePitchMin
+        ),
+        angleRoll: Math.floor(
+          Math.random() * (data.angleRollMax - data.angleRollMin) + data.angleRollMin
+        ),
+        movementCount: Math.floor(
+          Math.random() * (data.movementCountMax - data.movementCountMin) +
+            data.movementCountMin
+        ),
+        batteryVoltage: Math.floor(
+          Math.random() * (data.batteryCountMax - data.batteryCountMin) +
+            data.batteryCountMin
+        ),
+        intervalTime: data.intervalTime,
+        range: data.range,
+        measuredPower: data.measuredPower,
+        anglePitchMax: data.anglePitchMax,
+        anglePitchMin: data.anglePitchMin,
+        angleRollMax: data.angleRollMax,
+        angleRollMin: data.angleRollMin,
+        movementCountMax: data.movementCountMax,
+        movementCountMin: data.movementCountMin,
+        batteryCountMax: data.batteryCountMax,
+        batteryCountMin: data.batteryCountMin,
+        timestamp: new Date().toISOString()
+      })
+      console.log(res2.data)
     })
     
-    console.log(checkedData)
   }
   useEffect(() => {
     getAll()
   
   }, []);
   
+  const executeRepeatFunction = async () => {
+    console.log("here")
+     const intervalTimer  =  setInterval(async () => {
+        await repeatFunction()
+      }, 5000)
+      return () => clearInterval(intervalTimer)
+  }
+
   return (
     <div>
     <ul role="list" className="divide-y divide-gray-200">
@@ -115,7 +153,7 @@ export default function ViewAll() {
     </ul>
     <div className="mx-auto w-1/2 mt-12">
     <button
-            onClick={() => startExecution()}
+            onClick={() => executeRepeatFunction()}
             type="button"
             className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
           >

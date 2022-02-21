@@ -13,7 +13,6 @@ import {isExpired} from "./util";
 function App() {
   const RequireAuth = ({ children }) => {
     let auth = isExpired();
-    console.log(auth);
     let location = useLocation();
     if (auth) {
       // Redirect them to the /login page, but save the current location they were

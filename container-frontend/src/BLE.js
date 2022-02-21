@@ -4,35 +4,67 @@ import { useLocation } from "react-router-dom";
 import http from "./http-common.js";
 export default function BLE() {
   const location = useLocation();
-  const {
-    // name,
-    // powerLevel,
-    // intervalTime,
-    // range,
-    // measuredPower,
-    // anglePitch,
-    // angleRoll,
-    // movementCount,
-    // batteryVoltage,
-    // uuid,
-  } = location.state;
-  console.log(location);
   // const [rssi, setRssi] = useState(measuredPower);
   // const [constantN, setCostantN] = useState(2);
   const [execution, setExecution] = useState(false);
   const [data, setData] = useState([]);
-  // const repeatFunction = async () => {
-  //   try {
-  //     const res = await httpCommon.get(`/api/getById/${uuid}`);
+  const repeatFunction = async () => {
+    console.log(execution)
+    if(!execution) return;
+    try {
+      const res = await http.patch("sensor/update/data", {
+        sensor: location.state,
+        anglePitch: Math.floor(
+          Math.random() * (data.anglePitchMax - data.anglePitchMin) +
+            data.anglePitchMin
+        ),
+        angleRoll: Math.floor(
+          Math.random() * (data.angleRollMax - data.angleRollMin) + data.angleRollMin
+        ),
+        movementCount: Math.floor(
+          Math.random() * (data.movementCountMax - data.movementCountMin) +
+            data.movementCountMin
+        ),
+        batteryVoltage: Math.floor(
+          Math.random() * (data.batteryCountMax - data.batteryCountMin) +
+            data.batteryCountMin
+        ),
+        intervalTime: data.intervalTime,
+        range: data.range,
+        measuredPower: data.measuredPower,
+        anglePitchMax: data.anglePitchMax,
+        anglePitchMin: data.anglePitchMin,
+        angleRollMax: data.angleRollMax,
+        angleRollMin: data.angleRollMin,
+        movementCountMax: data.movementCountMax,
+        movementCountMin: data.movementCountMin,
+        batteryCountMax: data.batteryCountMax,
+        batteryCountMin: data.batteryCountMin,
+        timestamp: new Date().toISOString()
+      })
 
-  //     setData([...data, res.data]);
-  //     console.log(data);
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // };
+      setData(res.data);
+      console.log(res.data);
+      return res.data
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const executeRepeatFunction = async () => {
+    console.log("here")
+    console.log(data)
+
+    if(!execution) {
+      return;
+    }
+     const intervalTimer  =  setInterval(async () => {
+        console.log(execution, "insied loop")
+        await repeatFunction()
+      }, data.intervalTime)
+      return () => clearInterval(intervalTimer)
+  }
   const getBle = async () => {
-    console.log(location.state)
     try {
       const res = await http.get(`sensor/get/data/${location.state}`);
       console.log(res.data[res.data.length-1])
@@ -41,16 +73,16 @@ export default function BLE() {
       console.log(e);
     }
   }
-  useEffect(() => {
-    // if (execution) {
-    //   const interval = setInterval(() => {
-    //     repeatFunction();
-    //   }, intervalTime);
-    //   return () => clearInterval(interval);
-    // }
-   
+
+
+  useEffect(() => {   
       getBle()
   }, []);
+
+  useEffect(() => {
+    console.log(execution)
+    if(execution) executeRepeatFunction()
+  }, [execution])
   return (
     <div className="bg-white shadow overflow-hidden sm:rounded-lg">
       <div className="px-4 py-5 sm:px-6">
@@ -187,7 +219,7 @@ export default function BLE() {
             Cancel
           </button>
           <button
-            onClick={() => setExecution(true)}
+            onClick={() => {setExecution(true)}}
             type="button"
             className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
