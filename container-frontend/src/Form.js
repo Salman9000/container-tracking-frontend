@@ -1,5 +1,5 @@
 import { useState } from "react";
-import http from "./http-common.js";
+import { http } from "./http-common.js";
 import { nanoid } from "nanoid";
 import MultiRangeSlider from "multi-range-slider-react";
 
@@ -65,7 +65,7 @@ export default function Form() {
       const res = await http.post("sensor/add", {name: data.name});
       const id = res.data.uid
       const res2 = await http.patch("sensor/update/data", {
-        sensorid: id,
+        sensor: id,
         anglePitch: Math.floor(
           Math.random() * (data.anglePitchMax - data.anglePitchMin) +
             data.anglePitchMin

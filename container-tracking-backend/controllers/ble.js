@@ -1,5 +1,6 @@
 const axios = require("axios");
 
+let simulateByIdFlag = false
 let defaultData = [];
 
 const getAll = async (req, res) => {
@@ -192,6 +193,73 @@ const addAsset = async (req, res) => {
   console.log(response.data)
 }
 
+const repeatFunction = async (id, data, token, intervalTimer) => {
+  if (!simulateByIdFlag){
+    clearInterval(intervalTimer)
+   } 
+  const config = {
+    headers: { Authorization: `Bearer ${token}` }
+};
+
+  try {
+    const res = await axios.patch("https://at-backend1.herokuapp.com/sensor/update/data", {
+      sensor: id,
+      anglePitch: Math.floor(
+        Math.random() * (data.anglePitchMax - data.anglePitchMin) +
+          data.anglePitchMin
+      ),
+      angleRoll: Math.floor(
+        Math.random() * (data.angleRollMax - data.angleRollMin) + data.angleRollMin
+      ),
+      movementCount: Math.floor(
+        Math.random() * (data.movementCountMax - data.movementCountMin) +
+          data.movementCountMin
+      ),
+      batteryVoltage: Math.floor(
+        Math.random() * (data.batteryCountMax - data.batteryCountMin) +
+          data.batteryCountMin
+      ),
+      intervalTime: data.intervalTime,
+      range: data.range,
+      measuredPower: data.measuredPower,
+      anglePitchMax: data.anglePitchMax,
+      anglePitchMin: data.anglePitchMin,
+      angleRollMax: data.angleRollMax,
+      angleRollMin: data.angleRollMin,
+      movementCountMax: data.movementCountMax,
+      movementCountMin: data.movementCountMin,
+      batteryCountMax: data.batteryCountMax,
+      batteryCountMin: data.batteryCountMin,
+      timestamp: new Date().toISOString()
+    }, config)
+    console.log(res.data);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const simulateById = async (req, res) => {
+  const id = req.params.id
+  const {data, token} = req.body
+  console.log(data)
+  simulateByIdFlag = true
+
+    console.log(simulateByIdFlag)
+    const intervalTimer  =  setInterval(async () => {
+      console.log(simulateByIdFlag, "inside setinterval")
+      console.log("insied loop")
+      await repeatFunction(id, data, token, intervalTimer)
+    }, data.intervalTime)
+
+    
+}
+
+const cancelSimulationById = async (req, res) => {
+  console.log("here")
+  simulateByIdFlag = false
+  return res.status(200).send("Cancelled")
+}
+
 module.exports.getAll = getAll;
 module.exports.get = get;
 module.exports.create = create;
@@ -199,3 +267,6 @@ module.exports.update = update;
 module.exports.remove = remove;
 module.exports.addAsset = addAsset;
 module.exports.removeAll = removeAll;
+module.exports.simulateById = simulateById;
+module.exports.cancelSimulationById = cancelSimulationById;
+

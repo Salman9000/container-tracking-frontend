@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import http from "./http-common.js";
+import { http } from "./http-common.js";
 
 export default function ViewAll() {
 
