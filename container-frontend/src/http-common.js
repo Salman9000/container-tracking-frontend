@@ -13,6 +13,7 @@ const localHttp = axios.create({
   baseURL: "https://tranquil-dawn-42923.herokuapp.com/api/",
   headers: {
     "Content-type": "application/json",
+    "Authorization": `Bearer ${getToken()}` 
   }
 });
 
