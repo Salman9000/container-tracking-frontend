@@ -36,7 +36,7 @@ const CanvasJSChart = CanvasJSReact.CanvasJSChart;
       setRefreshDisable(false)
     }, data.intervalTime);
     try {
-      await localHttp.post(`simulateById/${location.state}`, {data, token: getToken()})
+      await localHttp.post(`simulateById/${location.state}`)
     } catch(e) {
       console.log(e);
     }

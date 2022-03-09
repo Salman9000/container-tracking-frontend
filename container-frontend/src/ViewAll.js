@@ -1,10 +1,39 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { http } from "./http-common.js";
+import { http, localHttp } from "./http-common.js";
 
 export default function ViewAll() {
 
   const [bleData, setData] = useState(null);
+  const [refreshDisabled, setRefreshDisable] = useState(true)
+  const [execution, setExecution] = useState(false)
+
+  const cancelSimulationAll = async () => {
+    setExecution(false)
+    try {
+      const res = await localHttp.post(`cancelSimulationAll`)
+      console.log(res.data);
+      setRefreshDisable(true)
+    } catch(e) {
+      console.log(e);
+    }
+  }
+
+  const executeRepeatFunctionAll = async () => {
+    setExecution(true)
+    setRefreshDisable(true)
+    console.log("here")
+    setTimeout(() => {
+      setRefreshDisable(false)
+    }, 6000);
+    try {
+      await localHttp.post(`simulateAll`, bleData.filter(item => item.checked == true))
+    } catch(e) {
+      console.log(e);
+    }  
+  }
+
+
   const handleOnChange = (position) => {
     const updatedCheckedState = bleData.map((item, index) => {
       if(index===position) {
@@ -29,57 +58,19 @@ export default function ViewAll() {
     }
   }
 
-  const repeatFunction = async () => {
-    let checkedData = bleData.filter(item => item.checked == true)
-    checkedData.map(async ble => {
-      const res = await http.get(`/sensor/get/data/${ble.uid}`)
-      const data = res.data[res.data.length-1]
-      const res2 = await http.patch("sensor/update/data", {
-        sensor: ble.uid,
-        anglePitch: Math.floor(
-          Math.random() * (data.anglePitchMax - data.anglePitchMin) +
-            data.anglePitchMin
-        ),
-        angleRoll: Math.floor(
-          Math.random() * (data.angleRollMax - data.angleRollMin) + data.angleRollMin
-        ),
-        movementCount: Math.floor(
-          Math.random() * (data.movementCountMax - data.movementCountMin) +
-            data.movementCountMin
-        ),
-        batteryVoltage: Math.floor(
-          Math.random() * (data.batteryCountMax - data.batteryCountMin) +
-            data.batteryCountMin
-        ),
-        intervalTime: data.intervalTime,
-        range: data.range,
-        measuredPower: data.measuredPower,
-        anglePitchMax: data.anglePitchMax,
-        anglePitchMin: data.anglePitchMin,
-        angleRollMax: data.angleRollMax,
-        angleRollMin: data.angleRollMin,
-        movementCountMax: data.movementCountMax,
-        movementCountMin: data.movementCountMin,
-        batteryCountMax: data.batteryCountMax,
-        batteryCountMin: data.batteryCountMin,
-        timestamp: new Date().toISOString()
-      })
-      console.log(res2.data)
-    })
-    
-  }
+  // const refreshData = () => {
+  //   setRefreshDisable(true)
+  //   getBle()
+  //   setTimeout(() => {
+  //       setRefreshDisable(false)
+  //   }, data.intervalTime);
+  // }
+
   useEffect(() => {
     getAll()
   
   }, []);
   
-  const executeRepeatFunction = async () => {
-    console.log("here")
-     const intervalTimer  =  setInterval(async () => {
-        await repeatFunction()
-      }, 5000)
-      return () => clearInterval(intervalTimer)
-  }
 
   return (
     <div>
@@ -152,13 +143,32 @@ export default function ViewAll() {
       ))}
     </ul>
     <div className="mx-auto w-1/2 mt-12">
-    <button
-            onClick={() => executeRepeatFunction()}
+    <div className="flex justify-center items-center">
+          <button
+            onClick={() => cancelSimulationAll()}
             type="button"
-            className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            className="bg-white py-2 px-4 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => executeRepeatFunctionAll()}
+            type="button"
+            className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
           >
             Execute
           </button>
+          {/* <button
+            onClick={() => refreshDataAll()}
+            type="button"
+            disabled={refreshDisabled}
+            className={`ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${refreshDisabled && "bg-blue-400 hover:cursor-disable disabled:cursor-not-allowed"}`}
+          >
+            Refresh
+          </button> */}
+          {execution && <div className="ml-2 p-2 bg-yellow-200 border border-yellow-500 rounded-lg">Execution in process</div>}
+          {/* {!refreshDisabled && <div className="ml-2 p-2 bg-green-200 border border-green-500 rounded-lg">New Data available</div>} */}
+        </div>
           </div>
     </div>
   );
