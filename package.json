@@ -1,4 +1,5 @@
 {
+  "homepage": "http://Salman9000.github.io/container-frontend",
   "name": "container",
   "version": "0.1.0",
   "private": true,
@@ -11,6 +12,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^0.25.0",
     "bare-minimum-2d": "^0.3.0",
+    "gh-pages": "^3.2.3",
     "jwt-decode": "^3.1.2",
     "multi-range-slider-react": "^1.0.7",
     "nanoid": "^3.2.0",
@@ -29,7 +31,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [

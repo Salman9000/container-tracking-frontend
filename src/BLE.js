@@ -3,7 +3,6 @@ import { useLocation } from "react-router-dom";
 import { http, localHttp } from "./http-common.js";
 import CanvasJSReact from './canvasjs.react';
 import { getToken } from "./util";
-import { Circles } from 'react-loading-icons'
 
 export default function BLE() {
   const CanvasJS = CanvasJSReact.CanvasJS;
